@@ -3,40 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arithmetic Raffle Generator</title>
+    <title>Arithmetic Raffle Set</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --sidebar: #ffffff;
+            --accent: #4f46e5;
+            --ticket-border: #94a3b8;
+        }
+
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; }
+        
+        /* Layout */
+        .sidebar { 
+            width: 300px; height: 100vh; background: var(--sidebar); 
+            padding: 2rem; border-right: 1px solid #e2e8f0; position: sticky; top: 0;
+        }
+
+        .main-content { flex-grow: 1; padding: 40px; }
+
+        /* Sidebar Styling */
+        h2 { font-size: 1.25rem; margin-bottom: 1.5rem; color: #1e293b; }
+        .control-group { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 600; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        
+        .op-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .op-item { display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; }
+
+        select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+
+        button {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+            margin-top: 10px;
+        }
+        .btn-gen { background: var(--accent); color: white; }
+        .btn-gen:hover { background: #4338ca; }
+        .btn-print { background: #e2e8f0; color: #475569; }
+
+        /* Raffle Grid */
+        .raffle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Raffle Ticket Styling */
+        .ticket {
+            background: white;
+            border: 3px dashed var(--ticket-border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .ticket-id {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .math-box { font-size: 1.5rem; margin: 20px 0; }
+        
+        .ans-box {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        /* Print Utilities */
+        @media print {
+            .sidebar { display: none; }
+            body { background: white; }
+            .main-content { padding: 0; }
+            .ticket { 
+                box-shadow: none; 
+                border-color: #000; 
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <aside class="sidebar no-print">
-            <h2>Raffle Controls</h2>
-            <div class="control-group">
-                <label>Operations</label>
-                <div class="op-grid">
-                    <label><input type="checkbox" class="op" value="+" checked> +</label>
-                    <label><input type="checkbox" class="op" value="-"> -</label>
-                    <label><input type="checkbox" class="op" value="*"> ×</label>
-                    <label><input type="checkbox" class="op" value="/"> ÷</label>
-                </div>
-            </div>
-            <div class="control-group">
-                <label>Number Type</label>
-                <select id="type">
-                    <option value="whole">Whole Numbers</option>
-                    <option value="integer">Integers (±)</option>
-                    <option value="fraction">Fractions</option>
-                </select>
-            </div>
-            <button id="gen-btn">Generate Raffle Set</button>
-            <button onclick="window.print()">Print Cards</button>
-        </aside>
 
-        <main id="raffle-grid" class="raffle-grid">
-            </main>
-    </div>
+    <aside class="sidebar">
+        <h2>Raffle Controls</h2>
+        
+        <div class="control-group">
+            <label>Operations</label>
+            <div class="op-grid">
+                <div class="op-item"><input type="checkbox" class="op" value="+" checked> +</div>
+                <div class="op-item"><input type="checkbox" class="op" value="-" checked> -</div>
+                <div class="op-item"><input type="checkbox" class="op" value="*"> ×</div>
+                <div class="op-item"><input type="checkbox" class="op" value="/"> ÷</div>
+            </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="app.js"></script>
+        <div class="control-group">
+            <label>Number Type</label>
+            <select id="num-type">
+                <option value="whole">Whole Numbers</option>
+                <option value="decimal">Decimals (3 places)</option>
+                <option value="integer">Integers (±)</option>
+                <option value="fraction">Fractions</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label><input type="checkbox" id="show-ans" checked> Show Logic/Answer</label>
+        </div>
+
+        <button class="btn-gen" id="generate-btn">Generate Raffle Set</button>
+        <button class="btn-print" onclick="window.print()">Print Cards</button>
+    </aside>
+
+    <main class="main-content">
+        <div id="raffle-grid" class="raffle-grid">
+            </div>
+    </main>
+
+    <script>
+        // Wait for KaTeX to be ready
+        window.onload = () => {
+            const grid = document.getElementById('raffle-grid');
+            const genBtn = document.getElementById('generate-btn');
+
+            const renderSet = () => {
+                grid.innerHTML = '';
+                const type = document.getElementById('num-type').value;
+                const showAns = document.getElementById('show-ans').checked;
+                const ops = Array.from(document.querySelectorAll('.op:checked')).map(el => el.value);
+
+                if (ops.length === 0) {
+                    alert("Select at least one operator!");
+                    return;
+                }
+
+                for (let i = 1; i <= 12; i++) {
+                    const ticket = document.createElement('div');
+                    ticket.className = 'ticket';
+                    
+                    const op = ops[Math.floor(Math.random() * ops.length)];
+                    let mathTex = "";
+                    let ansTex = "";
+
+                    // DECIMAL LOGIC
+                    if (type === 'decimal') {
+                        let a = (Math.random() * 50).toFixed(2);
+                        let b = (Math.random() * 10).toFixed(1);
+                        mathTex = `${a} ${op === '*' ? '\\times' : op} ${b} = `;
+                        
+                        // Answer Logic with Vertical Alignment
+                        let result = eval(`${a} ${op === '*' ? '*' : op} ${b}`).toFixed(3);
+                        ansTex = `\\text{Align dots:} \\\\ \\begin{array}{r} ${a} \\\\ ${op} \\ ${b} \\\\ \\hline ${result} \\end{array}`;
+                    } 
+                    
+                    // WHOLE / INTEGER / FRACTION LOGIC (Simplified for display)
+                    else if (type === 'fraction') {
+                        mathTex = `\\frac{${i}}{${i+1}} ${op === '*' ? '\\times' : op} \\frac{1}{2} = `;
+                        ansTex = `\\text{Result: } \\dots`;
+                    } 
+                    else {
+                        let a = Math.floor(Math.random() * 20);
+                        let b = Math.floor(Math.random() * 20) + 1;
+                        if (type === 'integer' && Math.random() > 0.5) a = -a;
+                        mathTex = `${a} ${op === '*' ? '\\times' : op} ${b} = `;
+                        ansTex = `\\text{Answer: } ${eval(a + (op === '*' ? '*' : op) + b)}`;
+                    }
+
+                    ticket.innerHTML = `
+                        <span class="ticket-id">Raffle #${i}</span>
+                        <div class="math-box" id="m-${i}"></div>
+                        ${showAns ? `<div class="ans-box" id="a-${i}"></div>` : ''}
+                    `;
+                    grid.appendChild(ticket);
+
+                    // Render via KaTeX
+                    try {
+                        katex.render(mathTex, document.getElementById(`m-${i}`));
+                        if(showAns) katex.render(ansTex, document.getElementById(`a-${i}`));
+                    } catch (e) { console.error(e); }
+                }
+            };
+
+            genBtn.onclick = renderSet;
+            renderSet(); // Initial generation
+        };
+    </script>
 </body>
 </html>
