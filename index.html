@@ -2,61 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arithmetic Worksheet Generator</title>
-  
+  <title>Arithmetic Raffle Set</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
   <div class="app-container">
-    <aside class="sidebar">
-      <h2>Worksheet Settings</h2>
-      
+    <aside class="sidebar no-print">
+      <h2>Raffle Settings</h2>
       <div class="control-group">
-        <label>Operations (Spiral Review)</label>
-        <div><input type="checkbox" id="op-add" checked> Addition (+)</div>
-        <div><input type="checkbox" id="op-sub"> Subtraction (-)</div>
-        <div><input type="checkbox" id="op-mul"> Multiplication (×)</div>
-        <div><input type="checkbox" id="op-div"> Division (÷)</div>
+        <label>Operations</label>
+        <div class="check-grid">
+          <label><input type="checkbox" class="op-check" value="+" checked> +</label>
+          <label><input type="checkbox" class="op-check" value="-"> -</label>
+          <label><input type="checkbox" class="op-check" value="*"> ×</label>
+          <label><input type="checkbox" class="op-check" value="/"> ÷</label>
+        </div>
       </div>
-
       <div class="control-group">
-        <label for="num-type">Number Type</label>
+        <label>Mode</label>
         <select id="num-type">
-          <option value="whole">Whole Numbers (0+)</option>
-          <option value="integer">Integers (Pos & Neg)</option>
-          <option value="decimal">Decimals (up to 3 places)</option>
+          <option value="whole">Whole Numbers</option>
+          <option value="integer">Integers (±)</option>
+          <option value="decimal">Decimals</option>
           <option value="fraction">Fractions</option>
         </select>
       </div>
-
       <div class="control-group">
-        <label>Advanced Modifiers</label>
-        <div><input type="checkbox" id="mod-noreg"> No-Carry / No-Borrow</div>
-        <div><input type="checkbox" id="mod-word"> Word Problem Format</div>
-        <div><input type="checkbox" id="mod-ans"> Show Step-by-Step Logic</div>
+        <label><input type="checkbox" id="mod-ans" checked> Include Answer Key</label>
       </div>
-
-      <button id="btn-generate" class="primary-btn">Generate New Set</button>
-      <button id="btn-print" class="secondary-btn" onclick="window.print()">Print Worksheet</button>
+      <button id="btn-generate" class="primary-btn">Generate Raffle Tickets</button>
+      <button onclick="window.print()" class="secondary-btn">Print Cards</button>
     </aside>
 
-    <main class="paper" id="printable-area">
-      <header class="worksheet-header">
-        <div class="header-field">Name: ______________________</div>
-        <div class="header-field">Date: ____________</div>
-        <div class="header-field">Score: ______ / 10</div>
-      </header>
-      
-      <div id="worksheet-content" class="grid-container">
-        </div>
-    </main>
+    <main class="raffle-board" id="raffle-container">
+      </main>
   </div>
-
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
