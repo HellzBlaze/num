@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Arithmetic Raffle Set</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arithmetic Raffle Generator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-container">
-    <aside class="sidebar no-print">
-      <h2>Raffle Settings</h2>
-      <div class="control-group">
-        <label>Operations</label>
-        <div class="check-grid">
-          <label><input type="checkbox" class="op-check" value="+" checked> +</label>
-          <label><input type="checkbox" class="op-check" value="-"> -</label>
-          <label><input type="checkbox" class="op-check" value="*"> ×</label>
-          <label><input type="checkbox" class="op-check" value="/"> ÷</label>
-        </div>
-      </div>
-      <div class="control-group">
-        <label>Mode</label>
-        <select id="num-type">
-          <option value="whole">Whole Numbers</option>
-          <option value="integer">Integers (±)</option>
-          <option value="decimal">Decimals</option>
-          <option value="fraction">Fractions</option>
-        </select>
-      </div>
-      <div class="control-group">
-        <label><input type="checkbox" id="mod-ans" checked> Include Answer Key</label>
-      </div>
-      <button id="btn-generate" class="primary-btn">Generate Raffle Tickets</button>
-      <button onclick="window.print()" class="secondary-btn">Print Cards</button>
-    </aside>
+    <div class="app-container">
+        <aside class="sidebar no-print">
+            <h2>Raffle Controls</h2>
+            <div class="control-group">
+                <label>Operations</label>
+                <div class="op-grid">
+                    <label><input type="checkbox" class="op" value="+" checked> +</label>
+                    <label><input type="checkbox" class="op" value="-"> -</label>
+                    <label><input type="checkbox" class="op" value="*"> ×</label>
+                    <label><input type="checkbox" class="op" value="/"> ÷</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label>Number Type</label>
+                <select id="type">
+                    <option value="whole">Whole Numbers</option>
+                    <option value="integer">Integers (±)</option>
+                    <option value="fraction">Fractions</option>
+                </select>
+            </div>
+            <button id="gen-btn">Generate Raffle Set</button>
+            <button onclick="window.print()">Print Cards</button>
+        </aside>
 
-    <main class="raffle-board" id="raffle-container">
-      </main>
-  </div>
-  <script src="app.js"></script>
+        <main id="raffle-grid" class="raffle-grid">
+            </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
