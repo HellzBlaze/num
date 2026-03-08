@@ -3,71 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arithmetic Raffle Generator Pro</title>
+    <title>Arithmetic Raffle - Flip Mode</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
     <style>
         :root {
-            --bg: #f1f5f9;
-            --sidebar: #ffffff;
             --primary: #2563eb;
-            --border: #e2e8f0;
+            --sidebar-bg: #ffffff;
+            --card-front: #ffffff;
+            --card-back: #f8fafc;
         }
 
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; display: flex; color: #1e293b; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f1f5f9; margin: 0; display: flex; }
         
+        /* Sidebar */
         .sidebar { 
-            width: 320px; height: 100vh; background: var(--sidebar); 
-            padding: 1.5rem; border-right: 1px solid var(--border); 
-            position: sticky; top: 0; overflow-y: auto;
+            width: 320px; height: 100vh; background: var(--sidebar-bg); 
+            padding: 1.5rem; border-right: 1px solid #e2e8f0; 
+            position: sticky; top: 0; z-index: 10;
         }
 
         .main-content { flex-grow: 1; padding: 40px; }
 
-        h2 { font-size: 1.1rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; margin-bottom: 20px; }
-        .control-group { margin-bottom: 1.8rem; }
+        .control-group { margin-bottom: 1.5rem; }
         label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #64748b; }
         
         .op-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .op-item { background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.9rem; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-gen { background: var(--primary); color: white; }
 
-        select, input[type="range"] { width: 100%; }
-        .value-display { font-weight: bold; color: var(--primary); float: right; }
-
-        button {
-            width: 100%; padding: 12px; border: none; border-radius: 8px;
-            font-weight: 600; cursor: pointer; margin-top: 10px;
-        }
-        .btn-gen { background: var(--primary); color: white; transition: background 0.2s; }
-        .btn-gen:hover { background: #1d4ed8; }
-        .btn-print { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-
+        /* Raffle Card Container (3D Context) */
         .raffle-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
         }
 
-        .ticket {
-            background: white; border: 2px dashed #94a3b8; border-radius: 12px;
-            padding: 25px 15px; text-align: center; position: relative;
-            min-height: 180px; display: flex; flex-direction: column; justify-content: center;
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 220px;
+            perspective: 1000px;
+            cursor: pointer;
         }
 
-        .ticket-id {
-            position: absolute; top: 10px; left: 12px; font-size: 0.65rem;
-            font-weight: 800; color: #94a3b8; text-transform: uppercase;
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
         }
 
-        .math-box { font-size: 1.6rem; margin: 15px 0; min-height: 50px; }
-        .ans-box { border-top: 1px solid #f1f5f9; padding-top: 12px; color: #64748b; font-size: 0.85rem; }
+        /* The actual flip action */
+        .flip-card.is-flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border: 2px dashed #94a3b8;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card-front { background-color: var(--card-front); color: black; }
+        .card-back {
+            background-color: var(--card-back);
+            color: #334155;
+            transform: rotateY(180deg);
+            border-style: solid; /* Solid border for the answer side */
+        }
+
+        .ticket-id { position: absolute; top: 10px; left: 12px; font-size: 0.65rem; font-weight: 800; color: #94a3b8; }
+        .math-box { font-size: 1.6rem; }
+        .instruction { font-size: 0.7rem; color: #94a3b8; margin-top: 10px; }
 
         @media print {
-            .sidebar { display: none; }
-            body { background: white; }
-            .raffle-grid { grid-template-columns: 1fr 1fr; }
-            .ticket { border-color: #333; box-shadow: none; page-break-inside: avoid; }
+            .sidebar, .instruction { display: none; }
+            .flip-card { height: auto; perspective: none; cursor: default; }
+            .flip-card-inner { transform: none !important; }
+            .card-back { position: relative; transform: none; margin-top: 10px; border-style: dashed; }
+            .raffle-grid { display: block; }
         }
     </style>
 </head>
@@ -79,10 +106,10 @@
         <div class="control-group">
             <label>Operations</label>
             <div class="op-grid">
-                <div class="op-item"><input type="checkbox" class="op" value="+" checked> Add</div>
-                <div class="op-item"><input type="checkbox" class="op" value="-" checked> Sub</div>
-                <div class="op-item"><input type="checkbox" class="op" value="*"> Mult</div>
-                <div class="op-item"><input type="checkbox" class="op" value="/"> Div</div>
+                <div><input type="checkbox" class="op" value="+" checked> Add</div>
+                <div><input type="checkbox" class="op" value="-" checked> Sub</div>
+                <div><input type="checkbox" class="op" value="*"> Mult</div>
+                <div><input type="checkbox" class="op" value="/"> Div</div>
             </div>
         </div>
 
@@ -91,23 +118,20 @@
             <select id="num-type">
                 <option value="whole">Whole Numbers</option>
                 <option value="decimal">Decimals</option>
-                <option value="integer">Integers (±)</option>
-                <option value="fraction">Fractions</option>
+                <option value="integer">Integers</option>
             </select>
         </div>
 
         <div class="control-group">
-            <label>Digits / Places: <span id="digit-val" class="value-display">2</span></label>
+            <label>Complexity (Digits/Places): <span id="digit-val">2</span></label>
             <input type="range" id="digit-range" min="1" max="4" value="2">
-            <small style="color: #94a3b8;">Controls number of digits (Whole) or decimal places (Decimals).</small>
-        </div>
+        </div >
 
-        <div class="control-group">
-            <label><input type="checkbox" id="show-ans" checked> Include Logic/Answer</label>
-        </div>
-
-        <button class="btn-gen" id="generate-btn">Generate Raffle Tickets</button>
-        <button class="btn-print" onclick="window.print()">Print Set</button>
+        <button class="btn-gen" id="generate-btn">Refresh Raffle Set</button>
+        <button onclick="window.print()" style="background:#e2e8f0;">Print Cards</button>
+        <p style="font-size: 0.75rem; color: #64748b; margin-top: 20px;">
+            💡 Click a card to flip and see the answer!
+        </p>
     </aside>
 
     <main class="main-content">
@@ -119,71 +143,65 @@
         const digitVal = document.getElementById('digit-val');
         digitRange.oninput = () => digitVal.textContent = digitRange.value;
 
-        window.onload = () => {
-            const grid = document.getElementById('raffle-grid');
-            const genBtn = document.getElementById('generate-btn');
-
-            const getRand = (digits) => {
-                const min = Math.pow(10, digits - 1);
-                const max = Math.pow(10, digits) - 1;
-                return Math.floor(Math.random() * (max - min + 1)) + min;
-            };
-
-            const renderSet = () => {
-                grid.innerHTML = '';
-                const type = document.getElementById('num-type').value;
-                const digits = parseInt(digitRange.value);
-                const showAns = document.getElementById('show-ans').checked;
-                const ops = Array.from(document.querySelectorAll('.op:checked')).map(el => el.value);
-
-                if (ops.length === 0) return alert("Select an operator!");
-
-                for (let i = 1; i <= 12; i++) {
-                    const ticket = document.createElement('div');
-                    ticket.className = 'ticket';
-                    const op = ops[Math.floor(Math.random() * ops.length)];
-                    
-                    let mathTex = "";
-                    let ansTex = "";
-
-                    if (type === 'decimal') {
-                        let a = (Math.random() * 50).toFixed(digits);
-                        let b = (Math.random() * 10).toFixed(digits);
-                        mathTex = `${a} ${op === '*' ? '\\times' : op} ${b} = `;
-                        let res = eval(`${a} ${op === '*' ? '*' : op} ${b}`).toFixed(digits + 1);
-                        ansTex = `\\text{Vertical Logic:} \\\\ \\begin{array}{r} ${a} \\\\ ${op} \\ ${b} \\\\ \\hline ${res} \\end{array}`;
-                    } 
-                    else if (type === 'whole' || type === 'integer') {
-                        let a = getRand(digits);
-                        let b = getRand(Math.max(1, digits - 1));
-                        if (type === 'integer' && Math.random() > 0.5) a = -a;
-                        if (op === '-' && a < b && type === 'whole') [a, b] = [b, a]; 
-                        
-                        mathTex = `${a} ${op === '*' ? '\\times' : op === '/' ? '\\div' : op} ${b} = `;
-                        ansTex = `\\text{Answer: } ${eval(a + (op === '*' ? '*' : op) + b)}`;
-                    }
-                    else if (type === 'fraction') {
-                        mathTex = `\\frac{${getRand(1)}}{${getRand(1)+1}} ${op === '*' ? '\\times' : op} \\frac{${getRand(1)}}{${getRand(1)+1}} = `;
-                        ansTex = `\\text{Simplify to lowest terms.}`;
-                    }
-
-                    ticket.innerHTML = `
-                        <span class="ticket-id">Ticket #${i}</span>
-                        <div class="math-box" id="m-${i}"></div>
-                        ${showAns ? `<div class="ans-box" id="a-${i}"></div>` : ''}
-                    `;
-                    grid.appendChild(ticket);
-
-                    try {
-                        katex.render(mathTex, document.getElementById(`m-${i}`));
-                        if(showAns) katex.render(ansTex, document.getElementById(`a-${i}`));
-                    } catch (e) { console.error(e); }
-                }
-            };
-
-            genBtn.onclick = renderSet;
-            renderSet();
+        const getRand = (d) => {
+            const min = Math.pow(10, d - 1);
+            const max = Math.pow(10, d) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         };
+
+        const renderSet = () => {
+            const grid = document.getElementById('raffle-grid');
+            grid.innerHTML = '';
+            const type = document.getElementById('num-type').value;
+            const digits = parseInt(digitRange.value);
+            const ops = Array.from(document.querySelectorAll('.op:checked')).map(el => el.value);
+
+            if (ops.length === 0) return alert("Select an operator!");
+
+            for (let i = 1; i <= 12; i++) {
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                let a, b, mathTex, ansTex;
+
+                if (type === 'decimal') {
+                    a = (Math.random() * 50).toFixed(digits);
+                    b = (Math.random() * 10).toFixed(digits);
+                    mathTex = `${a} ${op === '*' ? '\\times' : op} ${b} = ?`;
+                    let res = eval(`${a} ${op === '*' ? '*' : op} ${b}`).toFixed(digits);
+                    ansTex = `\\text{Answer:} \\\\ ${res}`;
+                } else {
+                    a = getRand(digits);
+                    b = getRand(Math.max(1, digits - 1));
+                    if (type === 'integer' && Math.random() > 0.5) a = -a;
+                    mathTex = `${a} ${op === '*' ? '\\times' : op === '/' ? '\\div' : op} ${b} = ?`;
+                    ansTex = `\\text{Answer:} \\\\ ${eval(a + (op === '*' ? '*' : op) + b)}`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'flip-card';
+                card.onclick = () => card.classList.toggle('is-flipped');
+
+                card.innerHTML = `
+                    <div class="flip-card-inner">
+                        <div class="card-front">
+                            <span class="ticket-id">Ticket #${i}</span>
+                            <div class="math-box" id="m-${i}"></div>
+                            <span class="instruction">Click to reveal</span>
+                        </div>
+                        <div class="card-back">
+                            <div class="math-box" id="a-${i}"></div>
+                            <span class="instruction">Click to hide</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                katex.render(mathTex, document.getElementById(`m-${i}`));
+                katex.render(ansTex, document.getElementById(`a-${i}`));
+            }
+        };
+
+        document.getElementById('generate-btn').onclick = renderSet;
+        window.onload = renderSet;
     </script>
 </body>
 </html>
