@@ -1,46 +1,56 @@
-:root {
-  --ticket-bg: #fff;
-  --ticket-border: #cbd5e1;
-  --accent: #4f46e5;
-}
+const generateRaffle = () => {
+  const container = document.getElementById('raffle-container');
+  const type = document.getElementById('num-type').value;
+  const showAns = document.getElementById('mod-ans').checked;
+  
+  // Get all checked operations
+  const ops = Array.from(document.querySelectorAll('.op-check:checked')).map(el => el.value);
+  if (ops.length === 0) ops.push('+');
 
-body { font-family: sans-serif; background: #f1f5f9; margin: 0; }
-.app-container { display: flex; min-height: 100vh; }
+  container.innerHTML = ''; // Clear board
 
-.sidebar { width: 260px; padding: 20px; background: #fff; border-right: 2px solid #e2e8f0; }
-.control-group { margin-bottom: 20px; }
-.primary-btn { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+  for (let i = 1; i <= 12; i++) {
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    const ticket = document.createElement('div');
+    ticket.className = 'ticket';
 
-.raffle-board {
-  flex-grow: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 30px;
-  justify-content: center;
-}
+    // Basic Logic Generator
+    let a = Math.floor(Math.random() * 20) + 1;
+    let b = Math.floor(Math.random() * 20) + 1;
+    let tex = '';
+    let ans = '';
 
-/* Raffle Ticket Card Styling */
-.ticket {
-  width: 280px;
-  min-height: 180px;
-  background: var(--ticket-bg);
-  border: 2px dashed var(--ticket-border);
-  padding: 15px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  border-radius: 10px;
-}
+    if (type === 'fraction') {
+        tex = `\\frac{1}{${a}} ${op === '*' ? '\\times' : op} \\frac{1}{${b}} = ?`;
+        ans = "Solve by finding the common denominator.";
+    } else if (type === 'integer') {
+        const signA = Math.random() > 0.5 ? 1 : -1;
+        a = a * signA;
+        tex = `${a} ${op === '*' ? '\\times' : op} ${b} = ?`;
+        ans = `Result: ${eval(a + (op==='*'? '*': op))}`;
+    } else {
+        tex = `${a} ${op === '*' ? '\\times' : op} ${b} = ?`;
+        ans = `Answer: ${eval(a + (op==='*'? '*': op))}`;
+    }
 
-.ticket-num { position: absolute; top: 10px; left: 10px; font-size: 0.8rem; color: #94a3b8; }
-.math-display { font-size: 1.5rem; margin: 15px 0; }
-.answer-section { border-top: 1px solid #f1f5f9; padding-top: 10px; color: #64748b; font-size: 0.9rem; }
+    ticket.innerHTML = `
+      <span class="ticket-num">TICKET #${i}</span>
+      <div class="math-display" id="math-${i}"></div>
+      ${showAns ? `<div class="answer-section" id="ans-${i}"></div>` : ''}
+    `;
 
-@media print {
-  .no-print { display: none; }
-  .raffle-board { padding: 0; }
-  .ticket { page-break-inside: avoid; border: 1px dashed #000; }
-}
+    container.appendChild(ticket);
+
+    // Safe KaTeX Render
+    try {
+      window.katex.render(tex, document.getElementById(`math-${i}`));
+      if(showAns) window.katex.render(ans, document.getElementById(`ans-${i}`));
+    } catch (e) {
+      document.getElementById(`math-${i}`).innerText = tex;
+    }
+  }
+};
+
+// Event Listeners
+document.getElementById('btn-generate').onclick = generateRaffle;
+window.onload = generateRaffle;
