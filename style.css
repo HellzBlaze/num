@@ -1,0 +1,109 @@
+:root {
+  --bg-color: #f4f7f6;
+  --sidebar-bg: #ffffff;
+  --text-main: #2d3748;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --border-color: #e2e8f0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar Settings */
+.sidebar {
+  width: 300px;
+  background: var(--sidebar-bg);
+  padding: 2rem;
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+}
+
+.control-group {
+  margin-bottom: 1.5rem;
+}
+
+.control-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1a202c;
+}
+
+select {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: background 0.2s;
+}
+
+.primary-btn { background: var(--primary); color: white; }
+.primary-btn:hover { background: var(--primary-hover); }
+.secondary-btn { background: #cbd5e1; color: var(--text-main); }
+
+/* Paper UI */
+.paper {
+  flex-grow: 1;
+  max-width: 850px;
+  margin: 2rem auto;
+  background: white;
+  padding: 3rem;
+  overflow-y: auto;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.worksheet-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem 2rem;
+}
+
+.problem-container {
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.answer-key {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-left: 4px solid var(--primary);
+  font-size: 1rem;
+}
+
+/* Print Styles */
+@media print {
+  body { background: white; }
+  .sidebar { display: none; }
+  .app-container { height: auto; display: block; }
+  .paper { margin: 0; padding: 0; box-shadow: none; max-width: 100%; }
+}
