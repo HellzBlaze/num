@@ -1,109 +1,46 @@
 :root {
-  --bg-color: #f4f7f6;
-  --sidebar-bg: #ffffff;
-  --text-main: #2d3748;
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --border-color: #e2e8f0;
+  --ticket-bg: #fff;
+  --ticket-border: #cbd5e1;
+  --accent: #4f46e5;
 }
 
-body {
-  margin: 0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-}
+body { font-family: sans-serif; background: #f1f5f9; margin: 0; }
+.app-container { display: flex; min-height: 100vh; }
 
-.app-container {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
+.sidebar { width: 260px; padding: 20px; background: #fff; border-right: 2px solid #e2e8f0; }
+.control-group { margin-bottom: 20px; }
+.primary-btn { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 
-/* Sidebar Settings */
-.sidebar {
-  width: 300px;
-  background: var(--sidebar-bg);
-  padding: 2rem;
-  border-right: 1px solid var(--border-color);
-  overflow-y: auto;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-}
-
-.control-group {
-  margin-bottom: 1.5rem;
-}
-
-.control-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #1a202c;
-}
-
-select {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid var(--border-color);
-}
-
-button {
-  width: 100%;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-bottom: 0.75rem;
-  transition: background 0.2s;
-}
-
-.primary-btn { background: var(--primary); color: white; }
-.primary-btn:hover { background: var(--primary-hover); }
-.secondary-btn { background: #cbd5e1; color: var(--text-main); }
-
-/* Paper UI */
-.paper {
+.raffle-board {
   flex-grow: 1;
-  max-width: 850px;
-  margin: 2rem auto;
-  background: white;
-  padding: 3rem;
-  overflow-y: auto;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-}
-
-.worksheet-header {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 3rem;
-  font-size: 1.1rem;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 30px;
+  justify-content: center;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 3rem 2rem;
+/* Raffle Ticket Card Styling */
+.ticket {
+  width: 280px;
+  min-height: 180px;
+  background: var(--ticket-bg);
+  border: 2px dashed var(--ticket-border);
+  padding: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  border-radius: 10px;
 }
 
-.problem-container {
-  font-size: 1.25rem;
-  line-height: 1.5;
-}
+.ticket-num { position: absolute; top: 10px; left: 10px; font-size: 0.8rem; color: #94a3b8; }
+.math-display { font-size: 1.5rem; margin: 15px 0; }
+.answer-section { border-top: 1px solid #f1f5f9; padding-top: 10px; color: #64748b; font-size: 0.9rem; }
 
-.answer-key {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-left: 4px solid var(--primary);
-  font-size: 1rem;
-}
-
-/* Print Styles */
 @media print {
-  body { background: white; }
-  .sidebar { display: none; }
-  .app-container { height: auto; display: block; }
-  .paper { margin: 0; padding: 0; box-shadow: none; max-width: 100%; }
+  .no-print { display: none; }
+  .raffle-board { padding: 0; }
+  .ticket { page-break-inside: avoid; border: 1px dashed #000; }
 }
